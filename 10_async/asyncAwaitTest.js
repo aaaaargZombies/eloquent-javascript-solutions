@@ -32,3 +32,6 @@ f1();
 // it'd run too soon. 
 //
 // bummer.
+//
+// Reading slightly later in the chapter in 'event loop', the problem 'async/await' solves is not pulling these functions out of their context or place in the call-stack.
+
