@@ -4,11 +4,17 @@ let {run, topScope} = require('./eggLang.js');
 
 // Modify these definitions...
 
-topScope.array = '...';
+topScope.array = (...values) => {
+  return values;
+};
 
-topScope.length = '...';
+topScope.length = array => {
+  return array.length;
+};
 
-topScope.element = '...';
+topScope.element = (array, n) => {
+  return array[n];
+};
 
 run(`
 do(define(sum, fun(array,

@@ -177,10 +177,10 @@ specialForms.fun = (args, scope) => {
   };
 };
 
-const eggLang = {run, topScope};
+const eggLang = {run, topScope, parse};
 
 // This makes sure the data is exported in node.js —
-// `require('./path/to/eggLang.js')` will get you the array.
+// `require('./path/to/eggLang.js')` will get you the `run` function and `topScope` object.
 if (
   typeof module != 'undefined' &&
   module.exports &&
