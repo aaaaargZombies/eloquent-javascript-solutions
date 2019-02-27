@@ -1,5 +1,16 @@
+// one thing I've realised looking at this code is that these predefined functions all use callbacks but I can't see how a call back is made.
+// what is the equivilent new Promise((res,rej) => {...})
+// a callback looks like a function you pass into another function and somewhere in the definition of the exterior function they make it asynchronous.
+
 import {bigOak} from "./crow-tech";
 import {defineRequestType} from "./crow-tech";
+
+// readStorage method.
+// oporates on the nests storage which is JSON.
+// takes:
+//		1 the key/name of an array
+//		2 a callback function that is called on the array when it returns.
+// the function takes the named array as its argument and readStorage returns the result of the function.
 
 bigOak.readStorage("food caches", caches => {
   let firstCache = caches[0];
@@ -8,16 +19,46 @@ bigOak.readStorage("food caches", caches => {
   });
 });
 
+// send method
+// goal: interact with other nests
+// takes: 
+//		1 the name of a nest which is the destination
+//		2 the type of message
+//		3 the content of the message
+//		4 a callback function to be run once the recieving nest confirms the message has made it.
+// returns:
+//		1 the result of the callback function
+
 bigOak.send("Cow Pasture", "note", "Let's caw loudly at 7PM",
 	() => console.log("Note delivered."));
 
 // Cow Pasture received note: Let's caw loudly at 7PM
 // Note delivered.
 
+
+// defineRequestType function
+// goal: to establish how to respond to incomming 'sends' 
+// takes:
+//		1 the name of the new request
+//		2 a function that defines its response once it recieves the request.
+// returns:
+//		1 the result of thefunction (in this case it prints who send the note and what its contents is)
+//		2 runs the done() callback function to inform the other nest its finnished
+
+
 defineRequestType("note", (nest, content, source, done) => {
   console.log(`${nest.name} received note: ${content}`);
   done();
 });
+
+
+// storage function
+// goal: return a promise using the callback interface of the readStorage method
+// takes:
+//		1 nest object it is calling the readStorage method on
+//		2 name of the information it is looking up in storage
+// returns
+//		1 a promise containing the resulting information
 
 function storage(nest, name) {
   return new Promise(resolve => {
@@ -34,8 +75,21 @@ storage(bigOak, "enemies")
 // 2:	"That one-legged jackdaw"
 // 3:	"The boy with the airgun" ]
 
+
+// name an error
 class Timeout extends Error {}
 
+
+// goal: 
+//		1 turn a callback into a promises
+//		2 repeat the send method up to 3 times if it does not return within the given timescale
+// takes:
+//		1 nest object on which to call the send method
+//		2 the desination nest to send to
+//		3 the type of request to be sent
+//		4 the content of the request
+// reutns:
+//		1 a promise containing the result of the send method or the Timeout error object
 function request(nest, target, type, content) {
   return new Promise((resolve, reject) => {
     let done = false;
@@ -55,6 +109,13 @@ function request(nest, target, type, content) {
   });
 }
 
+
+// goal: wrap defineRequestType with a promise to avoid having to use callbacks
+// takes:
+//		1 name of the request type
+//		2 the function to run when recieving a request of this type
+// returns:
+//		1 a promise or exception
 function requestType(name, handler) {
   defineRequestType(name, (nest, content, source,
                            callback) => {
@@ -70,6 +131,11 @@ function requestType(name, handler) {
 
 requestType("ping", () => "pong");
 
+// goal: create an array of nest names that responded to the ping request
+// takes:
+//		1 a nest object
+// returns:
+//		1 an array based on nest.neighbors filtered by the succes of their response to ping
 function availableNeighbors(nest) {
   let requests = nest.neighbors.map(neighbor => {
     return request(nest, neighbor, "ping")

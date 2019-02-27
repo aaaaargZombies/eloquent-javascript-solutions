@@ -1,0 +1,14 @@
+// multiplier(2)(1)
+
+{
+  "expr": {
+    "type": "apply",
+    "operator": {
+      "type": "apply",
+      "operator": {"type": "word", "name": "multiplier"},
+      "args": [{"type": "value", "value": 2}]
+    },
+    "args": [{"type": "value", "value": 1}]
+  },
+  "rest": ""
+}
