@@ -1,0 +1,7 @@
+tab-panel div {
+  position: relative;
+  height: 100px;
+  width: 300px;
+  background: hsla(180, 30%, 30%);
+  color: hsla(180, 40%, 60%);
+}

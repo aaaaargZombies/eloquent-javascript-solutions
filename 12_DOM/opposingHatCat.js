@@ -14,6 +14,8 @@ function animate(time) {
   hat.style.top = Math.sin(angle + Math.PI) * 40 + 40 + 'px';
   hat.style.left = Math.cos(angle + Math.PI) * 200 + 230 + 'px';
 
+  // this took me way too long, the book had already told me that a full rotation == 2 * PI
+
   requestAnimationFrame(animate);
 }
 requestAnimationFrame(animate);

@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title></title>
+  </head>
+  <body>
+    <script>
+      let scheduled = null;
+      window.addEventListener('mousemove', event => {
+        if (!scheduled) {
+          // why does this keep working after schedule is set to event the first the event happens?
+          setTimeout(() => {
+            document.body.textContent = `Mouse at ${scheduled.pageX}, ${
+              scheduled.pageY
+            }`;
+            scheduled = null;
+          }, 250);
+        }
+        scheduled = event;
+      });
+    </script>
+  </body>
+</html>
