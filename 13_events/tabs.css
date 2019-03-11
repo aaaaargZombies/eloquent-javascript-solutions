@@ -5,3 +5,7 @@ tab-panel div {
   background: hsla(180, 30%, 30%);
   color: hsla(180, 40%, 60%);
 }
+
+.active {
+  background: hsla(180, 30%, 30%);
+}
