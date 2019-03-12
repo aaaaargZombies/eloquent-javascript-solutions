@@ -46,3 +46,6 @@ function asTabs(node) {
 }
 
 asTabs(document.querySelector('tab-panel'));
+
+// looking at the solution I could have saved alot of lines of code using tuples
+// also node.style.<css property> is the way to go, node.style= '...' means you need to repeat a lot of stuff if you make many changes to the styles.
