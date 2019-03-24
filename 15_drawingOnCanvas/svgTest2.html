@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title></title>
+  </head>
+  <body>
+    <svg xmls="http://www.w3.org/2000/svg">
+      <circle r="50" cx="50" cy="50" fill="blue" />
+      <rect x="50" y="50" width="90" height="90" fill="blue" />
+    </svg>
+
+    <script>
+      let circle = document.getElementsByTagName('circle')[0];
+      let square = document.getElementsByTagName('rect')[0];
+      let shapes = [circle, square];
+      function color(node) {
+        node.attributes.fill.value = `hsla(${Math.floor(
+          Math.random() * 360,
+        )},60%,60%,60%)`;
+      }
+      shapes.forEach(x => {
+        x.addEventListener('click', event => {
+          color(x);
+        });
+      });
+    </script>
+  </body>
+</html>
