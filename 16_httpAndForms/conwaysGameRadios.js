@@ -1,7 +1,7 @@
 let grid = document.querySelector('#grid');
 let nextBtn = document.querySelector('#next');
-let gridSizeX = 50;
-let gridSizeY = 25;
+let gridSizeX = 10;
+let gridSizeY = 10;
 // a 2d array of booleans representing checked state
 let state;
 
@@ -10,9 +10,9 @@ function genGrid(x, y) {
   for (let i = 0; i < y; i++) {
     let div = document.createElement('div');
     for (let i = 0; i < x; i++) {
-      let checkbox = document.createElement('input');
-      checkbox.type = 'checkbox';
-      div.appendChild(checkbox);
+      let radio = document.createElement('input');
+      radio.type = 'radio';
+      div.appendChild(radio);
     }
     form.appendChild(div);
   }
@@ -21,8 +21,8 @@ function genGrid(x, y) {
 
 function readDomState() {
   // return a new state based on the dom's state. use when next is clicked
-  let checkboxs = [...grid.firstChild.elements];
-  let checked = checkboxs.map(x => x.checked);
+  let radios = [...grid.firstChild.elements];
+  let checked = radios.map(x => x.checked);
   let newState = [];
 
   let startSlice = 0;
@@ -59,31 +59,44 @@ function updateState(conditionFunction) {
 }
 
 function updateGrid(state) {
-  // reads the 2d state array and updates the checkBoxes acordingly
-  let checkboxs = [...grid.firstChild.elements];
+  // reads the 2d state array and updates the radioes acordingly
+  let radios = [...grid.firstChild.elements];
   let count = 0;
   state.forEach(row => {
     row.forEach(x => {
-      checkboxs[count].checked = x;
+      radios[count].checked = x;
       count++;
     });
   });
 }
 
-// TODO something goes terribly wrong when its not a square
-// fixed! it I just flipped the x/y figures when doing the neighbors.
 function neighborVecs(y, x) {
   return [
-    [y - 1, x - 1],
-    [y - 1, x],
-    [y - 1, x + 1],
-    [y, x - 1],
-    [y, x + 1],
-    [y + 1, x - 1],
-    [y + 1, x],
-    [y + 1, x + 1],
+    [x - 1, y - 1],
+    [x, y - 1],
+    [x + 1, y - 1],
+    [x - 1, y],
+    [x + 1, y],
+    [x - 1, y + 1],
+    [x, y + 1],
+    [x + 1, y + 1],
   ];
 }
+
+// R U L E S
+//
+// * Any live cell with fewer than two or more than three live neighbors dies.
+// * Any live cell with two or three live neighbors lives on to the next generation.
+// * Any dead cell with exactly three live neighbors becomes a live cell.
+
+/*
+	if (check = true) {
+		return (liveNeighbors < 2) ? !check : check;
+	} else {
+		return (liveNeighbros == 3) ? !check : check;
+	}
+	*/
+
 function conwaysRules(y, x) {
   const neighbors = neighborVecs(y, x);
   const lives = neighbors
@@ -99,22 +112,27 @@ function conwaysRules(y, x) {
     })
     .filter(x => x);
 
-  /*
-	R U L E S
-
-	* Any live cell with fewer than two or more than three live neighbors dies.
-	* Any live cell with two or three live neighbors lives on to the next generation.
-	* Any dead cell with exactly three live neighbors becomes a live cell.
-	*/
-
   if (state[y][x]) {
-    return lives.length < 2 || lives.length > 3 ? !state[y][x] : state[y][x];
+    return lives.length < 2 ? !state[y][x] : state[y][x];
   } else {
     return lives.length == 3 ? !state[y][x] : state[y][x];
   }
 }
 
 genGrid(gridSizeX, gridSizeY);
+
+// todo radios toggle on but not off with mouse
+//
+// doesn't seem to want to work, maybe i'm battling the built in browser features for no reason
+//
+//
+//[...grid.firstChild.elements].forEach(r => {
+//  r.addEventListener('click', e => {
+//    //e.preventDefault();
+//    console.log(e.srcElement.checked);
+//    e.srcElement.checked = !e.srcElement.checked;
+//  });
+//});
 state = readDomState();
 state = updateState((y, x) => {
   if (Math.random() > 0.5) return true;
@@ -127,7 +145,3 @@ nextBtn.addEventListener('click', () => {
   state = updateState(conwaysRules);
   updateGrid(state);
 });
-
-// setInterval(() => {
-// nextBtn.click();
-// }, 500);
