@@ -4,6 +4,72 @@
 
 ### Problem
 
+- Proper lines! My pythagoras based solution is horrible and the given answer produces a nice line but doesn't join the dots as it were.
+- The code below will only give the number of pixels on the X axis by design and its hard to think of a marker that will allow the insertion of bridging pixels.
+- Maybe storing the last pixel value and doing something in relation to that if the Y figure jumps?
+
+```
+  let points = [];
+  if (Math.abs(from.x - to.x) > Math.abs(from.y - to.y)) {
+    if (from.x > to.x) [from, to] = [to, from];
+    let slope = (to.y - from.y) / (to.x - from.x);
+    console.log({slope});
+    for (let {x, y} = from; x <= to.x; x++) {
+      points.push({x, y: Math.round(y), color}); // Math.round is the bit that tips it over onto the next line in relation to slope
+      y += slope;
+      console.log({y});
+    }
+  } else {
+    if (from.y > to.y) [from, to] = [to, from];
+    let slope = (to.x - from.x) / (to.y - from.y);
+    for (let {x, y} = from; y <= to.y; y++) {
+      points.push({x: Math.round(x), y, color});
+      x += slope;
+    }
+  }
+  return points;
+
+```
+
+### Answer
+
+- Keep a record of the last pixel and add a new one in if the `+= slope` axis is not the same as the last one.
+
+```
+  let points = [];
+  let lastPoint;
+  if (Math.abs(from.x - to.x) > Math.abs(from.y - to.y)) {
+    if (from.x > to.x) [from, to] = [to, from];
+    lastPoint = from;
+    let slope = (to.y - from.y) / (to.x - from.x);
+    for (let {x, y} = from; x <= to.x; x++) {
+      points.push({x, y: Math.round(y), color}); // Math.round is the bit that tips it over onto the next line in relation to slope
+      if (lastPoint.y != points[points.length - 1].y) {
+        // this works from top left to bottom write but no where else. its something.
+        points.push({x: lastPoint.x, y: Math.round(y), color});
+      }
+      lastPoint = {x, y: Math.round(y)};
+      y += slope;
+    }
+  } else {
+    if (from.y > to.y) [from, to] = [to, from];
+    lastPoint = from;
+    let slope = (to.x - from.x) / (to.y - from.y);
+    for (let {x, y} = from; y <= to.y; y++) {
+      points.push({x: Math.round(x), y, color});
+      if (lastPoint.x != points[points.length - 1].x) {
+        // this works from top left to bottom write but no where else. its something.
+        points.push({x: Math.round(x), y: lastPoint.y, color});
+      }
+      lastPoint = {x, y: Math.round(y)};
+      x += slope;
+    }
+  }
+  return points;
+```
+
+### Problem
+
 - Error handling using `try` / `catch` in functions using `async`,`await`.
 
 ```

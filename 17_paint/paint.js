@@ -36,16 +36,6 @@ function elt(type, props, ...children) {
 
 var scale = 10;
 
-// # Efficient drawing
-
-// During drawing, the majority of work that our application does happens in drawPicture. Creating a new state and updating the rest of the DOM isn’t very expensive, but repainting all the pixels on the canvas is quite a bit of work.
-
-// Find a way to make the syncState method of PictureCanvas faster by redrawing only the pixels that actually changed.
-
-// Remember that drawPicture is also used by the save button, so if you change it, either make sure the changes don’t break the old use or create a new version with a different name.
-
-// Also note that changing the size of a <canvas> element, by setting its width or height properties, clears it, making it entirely transparent again.
-
 var PictureCanvas = class PictureCanvas {
   constructor(picture, pointerDown) {
     this.dom = elt('canvas', {
@@ -134,17 +124,6 @@ PictureCanvas.prototype.touch = function(startEvent, onDown) {
   this.dom.addEventListener('touchmove', move);
   this.dom.addEventListener('touchend', end);
 };
-/*
-
-# Keyboard bindings
-
-Add keyboard shortcuts to the application. The first letter of a tool’s name selects the tool, and control-Z or command-Z activates undo.
-
-Do this by modifying the PixelEditor component. Add a tabIndex property of 0 to the wrapping <div> element so that it can receive keyboard focus. Note that the property corresponding to the tabindex attribute is called tabIndex, with a capital I, and our elt function expects property names. Register the key event handlers directly on that element. This means you have to click, touch, or tab to the application before you can interact with it with the keyboard.
-
-Remember that keyboard events have ctrlKey and metaKey (for the command key on Mac) properties that you can use to see whether those keys are held down.
-
-*/
 
 var PixelEditor = class PixelEditor {
   constructor(state, config) {
@@ -228,48 +207,11 @@ var ColorSelect = class ColorSelect {
   syncState(state) {
     this.input.value = state.color;
   }
-}; /*
- Proper lines 
-
-This is a more advanced exercise than the preceding two, and it will require you to design a solution to a nontrivial problem. Make sure you have plenty of time and patience before starting to work on this exercise, and do not get discouraged by initial failures. 
-
- On most browsers, when you select the draw tool and quickly drag across the picture, you don’t get a closed line. Rather, you get dots with gaps between them because the "mousemove" or "touchmove" events did not fire quickly enough to hit every pixel. 
-
- Improve the draw tool to make it draw a full line. This means you have to make the motion handler function remember the previous position and connect that to the current one. 
-
- To do this, since the pixels can be an arbitrary distance apart, you’ll have to write a general line drawing function. 
-
- 	A line between two pixels is a connected chain of pixels, as straight as possible, going from the start to the end. Diagonally adjacent pixels count as a connected. So a slanted line should look like the picture on the left, not the picture on the right. 
-
- 	Finally, if we have code that draws a line between two arbitrary points, we might as well use it to also define a line tool, which draws a straight line between the start and end of a drag. 
-
- 	 N O T E S 
-
- 	 * can't draw diagonal squares, can only make 90 degree movements 
- 	 * that gives 4 posibilites 
- 	 * use pythagoras to determin which move brings you closer to the goal 
- 	 * write a path finding algorithm based on these points.
-
-
-	P R O B L E M S
-
-	For some reason it doesn't like drawing straight lines, i assume the while look doesn't finish and it has to wait dispatch. 
-
-	Also, WTF after getting this working bar the straight line things I looked at the hints and the authors solution. It doesn't draw a propper line it looks just like the one in the bad picture. 
-
-	Fixed it, switched the while condition to an || instead of an && which makes alot of sense thinking about it. 
-
-	drawing a fast circle is still a bit pants. Maybe the while loop slows the function from returning so the next time drawPixel is called its too far around the curve to have enough reference points.
-
-*/
-function draw2(start, state, dispatch) {
+};
+function draw(start, state, dispatch) {
   function drawPixel(pos, state) {
     let drawn = [{x: start.x, y: start.y, color: state.color}];
     while (start.x != pos.x || start.y != pos.y) {
-      console.log({start, pos});
-      // generate vecs from start
-      // test each vec
-      // assign best one to start
       start = [
         {x: start.x, y: start.y - 1},
         {x: start.x + 1, y: start.y},
@@ -281,12 +223,71 @@ function draw2(start, state, dispatch) {
       drawn.push({x: start.x, y: start.y, color: state.color});
     }
     dispatch({picture: state.picture.draw(drawn)});
-    console.log('DISPATCHED');
   }
   drawPixel(start, state);
   return drawPixel;
 }
-function draw(pos, state, dispatch) {
+function linePythag(start, state, dispatch) {
+  // unexpected terrible results, it turns out that a straight line then a 45 degree line is often the result.
+  function drawLine(pos) {
+    let drawn = [{x: start.x, y: start.y, color: state.color}];
+    let tip = start;
+    while (tip.x != pos.x || tip.y != pos.y) {
+      tip = [
+        {x: tip.x, y: tip.y - 1},
+        {x: tip.x + 1, y: tip.y},
+        {x: tip.x, y: tip.y + 1},
+        {x: tip.x - 1, y: tip.y},
+      ].reduce((a, b) => {
+        return pythagoras(a, pos) < pythagoras(b, pos) ? a : b;
+      });
+      drawn.push({x: tip.x, y: tip.y, color: state.color});
+    }
+    dispatch({picture: state.picture.draw(drawn)});
+  }
+  drawLine(start);
+  return drawLine;
+}
+function drawLine(from, to, color) {
+  //  TODO this is code from the solution, I will come back to try and modify it to solve the poblem
+  let points = [];
+  let lastPoint;
+  if (Math.abs(from.x - to.x) > Math.abs(from.y - to.y)) {
+    if (from.x > to.x) [from, to] = [to, from];
+    lastPoint = from;
+    let slope = (to.y - from.y) / (to.x - from.x);
+    for (let {x, y} = from; x <= to.x; x++) {
+      points.push({x, y: Math.round(y), color}); // Math.round is the bit that tips it over onto the next line in relation to slope
+      if (lastPoint.y != points[points.length - 1].y) {
+        // this works from top left to bottom write but no where else. its something.
+        points.push({x: lastPoint.x, y: Math.round(y), color});
+      }
+      lastPoint = {x, y: Math.round(y)};
+      y += slope;
+    }
+  } else {
+    if (from.y > to.y) [from, to] = [to, from];
+    lastPoint = from;
+    let slope = (to.x - from.x) / (to.y - from.y);
+    for (let {x, y} = from; y <= to.y; y++) {
+      points.push({x: Math.round(x), y, color});
+      if (lastPoint.x != points[points.length - 1].x) {
+        // this works from top left to bottom write but no where else. its something.
+        points.push({x: Math.round(x), y: lastPoint.y, color});
+      }
+      lastPoint = {x, y: Math.round(y)};
+      x += slope;
+    }
+  }
+  return points;
+}
+function line(start, state, dispatch) {
+  return end => {
+    let line = drawLine(start, end, state.color);
+    dispatch({picture: state.picture.draw(line)});
+  };
+}
+function drawOriginal(pos, state, dispatch) {
   function drawPixel({x, y}, state) {
     let drawn = {x, y, color: state.color};
     dispatch({picture: state.picture.draw([drawn])});
@@ -311,17 +312,7 @@ function rectangle(start, state, dispatch) {
   drawRectangle(start);
   return drawRectangle;
 }
-/*
-		Circles   
-
-	Define a tool called circle that draws a filled circle when you drag. The center of the circle lies at the point where the drag or touch gesture starts, and its radius is determined by the distance dragged.
-
-*/ function circle(
-  start,
-  state,
-  dispatch,
-) {
-  // Your code here
+function circle(start, state, dispatch) {
   function drawCircle(pos) {
     let radius = Math.floor(pythagoras(start, pos));
     let drawn = [];
@@ -480,12 +471,12 @@ var UndoButton = class UndoButton {
 };
 var startState = {
   tool: 'draw',
-  color: '#000000',
+  color: '#717171',
   picture: Picture.empty(60, 30, '#f0f0f0'),
   done: [],
   doneAt: 0,
 };
-var baseTools = {draw, draw2, fill, rectangle, pick, circle};
+var baseTools = {draw, line, linePythag, fill, rectangle, pick, circle};
 var baseControls = [
   ToolSelect,
   ColorSelect,
