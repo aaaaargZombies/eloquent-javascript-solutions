@@ -1,17 +1,15 @@
-const {request, createServer} = require('http');
+const {request} = require('http');
 
-let requestStream = request(
+request(
   {
     hostname: 'localhost',
     path: '/hello.html',
     port: 8000,
-    method: 'GET',
-    headers: {Accept: 'text/html'},
+    method: 'POST',
   },
   response => {
-    console.log('Server responded with status code', response.statusCode);
+    response.on('data', chunk => process.stdout.write(chunk.toString()));
   },
-);
-requestStream.end();
+).end('This is just a test');
 
 // Making requests with Node’s raw functionality is rather verbose. There are much more convenient wrapper packages available on NPM. For example, node-fetch provides the promise-based fetch interface that we know from the browser.
