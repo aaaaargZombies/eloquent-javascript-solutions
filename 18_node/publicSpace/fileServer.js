@@ -9,6 +9,8 @@ const methods = Object.create(null);
 const baseDirectory = process.cwd();
 
 function urlPath(url) {
+  if (url === '/') url = '/public/index.html';
+  else url = '/public' + url;
   let {pathname} = parse(url);
   let path = resolve(decodeURIComponent(pathname).slice(1));
   if (path != baseDirectory && !path.startsWith(baseDirectory + sep)) {
