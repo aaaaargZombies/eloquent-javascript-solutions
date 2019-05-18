@@ -1,0 +1,7 @@
+body {
+  background: hsla(180, 30%, 30%, 30%);
+}
+
+span {
+  color: hsla(180, 30%, 100%, 100%);
+}
