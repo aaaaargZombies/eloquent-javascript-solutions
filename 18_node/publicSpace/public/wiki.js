@@ -18,7 +18,7 @@ class Wiki {
 
 class Read {
   constructor(content) {
-    this.dom = elt('div', {class: 'read', innerHTML: content});
+    this.dom = elt('div', {className: 'read', innerHTML: content});
   }
 
   process() {
@@ -30,7 +30,7 @@ class Read {
 
 class Write {
   constructor(content) {
-    this.dom = elt('textarea', {}, content);
+    this.dom = elt('textarea', {className: 'write'}, content);
   }
 
   process() {
@@ -53,27 +53,16 @@ class EditBtn {
 
 class SaveBtn {
   constructor() {
-    this.dom = elt('button', {}, 'SAVE');
+    this.dom = elt('button', {onclick: this.change}, 'SAVE');
   }
 
   change() {
-    wiki = new Wiki(new Edit(wiki.view.process()), new EditBtn());
+    wiki = new Wiki(new Read(wiki.view.process()), new EditBtn());
     updateDOM();
   }
 }
 
 const starterHTML = `<h1><span>#</span>Welcome</h1>`;
-
-// let state = new Object(null);
-// state.view = new Read(starterHTML);
-// state.btn = new EditBtn();
-// state.wiki = new Wiki(state.view, state.btn);
-
-// function updateState(state, action) {
-//   let newState = Object.assign({}, state, action);
-//   newState.wiki = new Wiki(newState.view, newState.btn);
-//   return newState;
-// }
 
 let wiki = new Wiki(new Read(starterHTML), new EditBtn());
 const container = document.querySelector('div');
