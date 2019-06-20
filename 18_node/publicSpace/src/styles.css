@@ -3,13 +3,14 @@ body {
 }
 
 span {
-  color: hsla(180, 30%, 90%, 100%);
+  color: hsla(180, 30%, 60%, 100%);
 }
 
 .read {
   background: hsla(180, 10%, 100%, 80%);
-  color: hsla(180, 30%, 30%, 100%);
   width: 60vw;
+  color: hsla(180, 30%, 30%, 100%);
+  /* color: red; */
   font-family: helvetica, sans-serif;
   padding: 10vw;
   margin: 10vw;

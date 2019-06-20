@@ -1,12 +1,12 @@
-function elt(type, props, ...children) {
-  let dom = document.createElement(type);
-  if (props) Object.assign(dom, props);
-  for (let child of children) {
-    if (typeof child != 'string') dom.appendChild(child);
-    else dom.appendChild(document.createTextNode(child));
-  }
-  return dom;
-}
+// function elt(type, props, ...children) {
+//   let dom = document.createElement(type);
+//   if (props) Object.assign(dom, props);
+//   for (let child of children) {
+//     if (typeof child != 'string') dom.appendChild(child);
+//     else dom.appendChild(document.createTextNode(child));
+//   }
+//   return dom;
+// }
 
 class Wiki {
   constructor(view, btn) {
@@ -18,13 +18,15 @@ class Wiki {
 
 class Read {
   constructor(content) {
-    this.dom = elt('div', {className: 'read', innerHTML: content});
+    this.dom = elt('div', {className: 'read'}, ...content);
+    // this.dom = elt('div', {className: 'read', innerHTML: content});
   }
 
   process() {
     // toMarkdown
-    let content = this.dom.innerHTML;
-    return content;
+    // let content = this.dom.innerHTML;
+    // return content;
+    return htmlToMd(this.dom);
   }
 }
 
@@ -35,8 +37,13 @@ class Write {
 
   process() {
     // toHTML
-    let content = this.dom.value;
-    return content;
+    // let content = this.dom.value;
+    // console.log(content);
+    // return content;
+
+    return mdToHtml(this.dom.value);
+
+    // need to write to server aswell
   }
 }
 
@@ -62,8 +69,10 @@ class SaveBtn {
   }
 }
 
-const starterHTML = `<h1><span>#</span>Welcome</h1>`;
+// TODO need a way to read from existing files for both links and so that changes persist to index.html
+const starterHTML = [elt('h1', {}, 'WELCOME TO THE MD WIKI')];
 
+// could wrap this in a function to protect it from global state but doesn't seem like much point given the spec for the exercise.
 let wiki = new Wiki(new Read(starterHTML), new EditBtn());
 const container = document.querySelector('div');
 

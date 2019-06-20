@@ -7,12 +7,21 @@
     "mime": "^2.2.0",
     "node-fetch": "^2.5.0"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "babel-preset-env": "^1.6.1",
+    "jest": "^22.4.3",
+    "parcel-bundler": "^1.7.0"
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest --watchAll",
     "prestart": "npm run update",
     "start": "node fileServer.js",
-    "update": "rm -r public && cp -r src public"
+    "update": "rm -r public && cp -r src public",
+    "watch": "while inotifywait -e close_write ./src/*; do npm run update; done"
+  },
+  "jest": {
+    "verbose": true,
+    "testURL": "http://localhost:1234/"
   },
   "author": "",
   "license": "ISC"
