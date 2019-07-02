@@ -1,6 +1,12 @@
 # Some things that I struggled with
 
+### Problem
+
 - Regex.
+
+### Answer
+
+I have been working on a markDown parser which has helped quite a lot but I have a ways to go!
 
 ### Problem
 
@@ -210,3 +216,9 @@ function rectangle(start, state, dispatch) {
 So i believe this works because its a closure. `rectangle` gets given to `pictureCanvas.mouse` which then creates a move event. this does `dispatch({picture: state.picture.draw(drawn)});` with the enclosed state each time. so it's not a case of at which point does the official state get updated but more a question of at which point does the official state stop being updated based on the enclosed state. ie when a fresh `rectangle()` function call is made, not when the returned `drawRectangle` function is being used.
 
 My confusion about the closures above is likely what made this difficult to understand.
+
+### Problem
+
+- What are the differences between `PUT` and `POST`?
+
+### Answer

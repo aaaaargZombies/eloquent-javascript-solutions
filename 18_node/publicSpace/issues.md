@@ -4,8 +4,9 @@
 
 - Need to automate `npm run update` but don't have internet so can't install anything to watch for changes in the src directory.
 - `textarea` css needs work so that content fills the element rather than using the scroll.
-- I've thought about using the `string.replace(someRegex, "")` to strip the html tags but I will also need to take into acount escaped quotes, newlines, spacing.
-- There's a lot of different markdowns out there, I think I should focus on a subset to start with and then work outwards as needed.
-- Also the original markdown is 1500 lines of perl :o, could i modify a module to give me the out put I'm looking for?
-- a link should trigger a `PUT` request if there is no page already.
-- an image is a link but how should it handle the `PUT`?
+- A link should trigger a `PUT` request if there is no page already.
+- I want to deliver `index.html` to when a get request is made to `/` but I also want to be able to view the contents of the directory from inside the program.
+
+> solved by adding a query string to the url.
+
+- An image is a link but how should it handle the `PUT`?

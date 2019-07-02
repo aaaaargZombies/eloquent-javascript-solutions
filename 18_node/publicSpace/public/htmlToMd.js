@@ -33,7 +33,7 @@ function parseNode(node) {
     } else if (n.nodeName === 'IMG') {
       md.push(` \n\n![${n.alt}](${n.src})`);
     } else if (n.nodeName === 'A') {
-      md.push(`[`, ...parseNode(n), `](`, n.href, `)`);
+      md.push(`[`, ...parseNode(n), `](`, n.attributes.href.nodeValue, `)`);
     } else if (n.nodeName === 'OL') {
       md.push(...parseLists(n));
     } else if (n.nodeName === 'UL') {

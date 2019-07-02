@@ -9,13 +9,13 @@ const methods = Object.create(null);
 const baseDirectory = process.cwd();
 
 function urlPath(url) {
+  // this is mangaling my links "www.test.com" becomes "http://localhost:8000/www.test.com" something to do with baseURI: "http://localhost:8000/" ???
   if (url === '/') url = '/public/index.html';
   else url = '/public' + url;
+  // url = '/public' + url;
   let {pathname} = parse(url);
   let path = resolve(decodeURIComponent(pathname).slice(1));
   if (path != baseDirectory && !path.startsWith(baseDirectory + sep)) {
-    // can't seem to provoke this response with /../
-    // But I can't escape the base dir so maybe thats fine?
     throw {status: 403, body: 'Forbidden'};
   }
   return path;
@@ -38,7 +38,9 @@ methods.GET = async function(request) {
     else return {status: 404, body: 'File not found'};
   }
   if (stats.isDirectory()) {
-    return {body: (await readdir(path)).join('\n')};
+    return {
+      body: (await readdir(path)).join('\n'),
+    };
   } else {
     return {body: createReadStream(path), type: mime.getType(path)};
   }
