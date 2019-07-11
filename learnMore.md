@@ -222,3 +222,76 @@ My confusion about the closures above is likely what made this difficult to unde
 - What are the differences between `PUT` and `POST`?
 
 ### Answer
+
+### Problem
+
+- Trigerering the file selection dialog with JS only works under certain conditions.
+- It requires 'user interaction' but I don't know exactly what that means.
+
+```
+let fileBtn = elt('button', {onclick: () => clickFileInput()}, 'File');
+
+function clickFileInput(){
+  let input = elt('input', {type: 'file', onchange: () => uploadImg(link)});
+  document.body.appendChild(input);
+  input.click();
+  input.remove();
+}
+
+document.body.appendChild(fileBtn);
+
+```
+
+- Clicking this button and triggering the following function will open the file selection dialog.
+
+```
+class SaveBtn {
+  constructor() {
+    this.dom = elt('button', {onclick: this.change}, 'SAVE');
+  }
+
+  change() {
+    wiki = new Wiki(new Read(wiki.view.process()), new EditBtn());
+    addMissingLinks(wiki.view.links());
+    addMissingImgs(wiki.view.imgs());
+    updateDOM();
+
+    fetch(document.baseURI, {
+      method: 'PUT',
+      body: document.documentElement.outerHTML,
+      headers: {
+        'Content-Type': 'text/html',
+      },
+    });
+  }
+}
+
+async function addMissingImgs(pageImgs) {
+  let serverImgs = await fetch(baseUrl + '?dir');
+  serverImgs = await serverImgs.text();
+  missingImgs = pageImgs.filter(
+    i =>
+      !serverImgs.split('\n').includes(i) &&
+      i.slice(0, 'http'.length) !== 'http',
+  );
+  missingImgs.forEach(i => {
+    addImg(i);
+  });
+}
+// TODO
+function addImg(link) {
+  debugger;
+  let type = link.split('.')[link.split('.').length - 1];
+  console.log({type});
+  if (!imgTypes.includes(type)) return;
+  let input = elt('input', {type: 'file', onchange: () => uploadImg(link)});
+  document.body.appendChild(input);
+  input.click();
+  input.remove();
+}
+
+```
+
+- the `addImg()` function is called as a result of clicking the save button. But it is called in the `forEach` loop, which is 4 calls deep from the button click.
+- Is it a question of how deep the call stack is, Could i try and move most of the logic into the `change()` function?
+- Or is there some other issue I'm missing?

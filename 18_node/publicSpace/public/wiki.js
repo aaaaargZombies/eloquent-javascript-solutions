@@ -20,6 +20,12 @@ class Read {
       x => x.attributes.href.nodeValue,
     );
   }
+
+  imgs() {
+    return Array.from(this.dom.querySelectorAll('img'))
+      .map(x => x.src)
+      .map(x => x.replace(baseUrl, ''));
+  }
 }
 
 class Write {
@@ -53,6 +59,7 @@ class SaveBtn {
   change() {
     wiki = new Wiki(new Read(wiki.view.process()), new EditBtn());
     addMissingLinks(wiki.view.links());
+    addMissingImgs(wiki.view.imgs());
     updateDOM();
 
     fetch(document.baseURI, {
@@ -66,7 +73,7 @@ class SaveBtn {
 }
 
 async function addMissingLinks(pageLinks) {
-  let serverLinks = await fetch('http://localhost:8000/?dir');
+  let serverLinks = await fetch(baseUrl + '?dir');
   serverLinks = await serverLinks.text();
   let missingLinks = pageLinks.filter(
     pl =>
@@ -94,7 +101,7 @@ function addLink(link) {
 </html>
 	`;
 
-  fetch(`http://localhost:8000/${link}`, {
+  fetch(baseUrl + link, {
     method: 'PUT',
     body: body,
     headers: {
@@ -102,17 +109,43 @@ function addLink(link) {
     },
   });
 }
+async function addMissingImgs(pageImgs) {
+  let serverImgs = await fetch(baseUrl + '?dir');
+  serverImgs = await serverImgs.text();
+  missingImgs = pageImgs.filter(
+    i =>
+      !serverImgs.split('\n').includes(i) &&
+      i.slice(0, 'http'.length) !== 'http',
+  );
+  missingImgs.forEach(i => {
+    addImg(i);
+  });
+}
+// TODO
+function addImg(link) {
+  debugger;
+  let type = link.split('.')[link.split('.').length - 1];
+  console.log({type});
+  if (!imgTypes.includes(type)) return;
+  // this is a new bit for me!
+  // file:///home/unicorn/sandbox/JS/eloquent/Eloquent-JavaScript/html/19_paint.html#p_apCzJ1aUDN
+  let input = elt('input', {type: 'file', onchange: () => uploadImg(link)});
+  // input.files[0] will be useful
+  document.querySelector('form').appendChild(input);
+  input.click(); // this isn't working??? works when i do it by hand though, 100% works on the paint program from EJS
+  // i think its something to do with the need for user interaction, if i make a button that calls the function when clicked will it work?
+  input.remove();
+}
 
-// TODO need a way to read from existing files for both links and so that changes persist to index.html
-// maybe tuple this to doc.quer('div').innerHTML ? [elt(...)] : Array.from(doc.quer('div').childNodes)
-// this is the problem of delivering static content then 'rehydrating' to the JS app.
-// maybe i want to read from files and update the dom instead of changing out pages????
-// how do i update the base URI?
+function uploadImg(link) {
+  console.log({link});
+}
+
 const container = document.querySelector('div');
+const baseUrl = 'http://localhost:8000/';
+const imgTypes = ['jpg', 'jpeg', 'gif', 'png', 'apng', 'svg', 'bmp', 'ico'];
 
 function starterHTML() {
-  // wrap all the logic and spit out something apropriate.
-  // debugger;
   const existingWiki = document.querySelector('.read');
   if (existingWiki) return domChildrenArray(existingWiki);
   const containerChildren = domChildrenArray(container);
