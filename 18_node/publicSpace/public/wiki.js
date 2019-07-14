@@ -131,9 +131,10 @@ function addImg(link) {
   // file:///home/unicorn/sandbox/JS/eloquent/Eloquent-JavaScript/html/19_paint.html#p_apCzJ1aUDN
   let input = elt('input', {type: 'file', onchange: () => uploadImg(link)});
   // input.files[0] will be useful
-  document.querySelector('form').appendChild(input);
+  document.body.appendChild(input);
   input.click(); // this isn't working??? works when i do it by hand though, 100% works on the paint program from EJS
   // i think its something to do with the need for user interaction, if i make a button that calls the function when clicked will it work?
+  // YES, THIS WORKS, now how to solve this??? I guess it is triggered by a button press but just quite far down the line....
   input.remove();
 }
 
