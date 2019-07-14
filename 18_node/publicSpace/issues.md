@@ -12,3 +12,5 @@
 - An image is a link but how should it handle the `PUT`?
 - I'd like to just open the select file dialogue for each missing link but the browser prevents this with out user interaction.
 - perhaps replace the image with a component that uploads the image then replaces itself with the image????
+
+- I have started a new branch to experiment with this in!
