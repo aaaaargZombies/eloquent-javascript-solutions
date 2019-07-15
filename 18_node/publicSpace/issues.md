@@ -12,3 +12,16 @@
 - An image is a link but how should it handle the `PUT`?
 - I'd like to just open the select file dialogue for each missing link but the browser prevents this with out user interaction.
 - perhaps replace the image with a component that uploads the image then replaces itself with the image????
+
+- uploading the file mangles the beginning has this added to it;
+
+      ```
+
+  -----------------------------173950316118920812811858908502
+  Content-Disposition: form-data; name="img"; filename="forJade.jpg"
+  Content-Type: image/jpeg
+
+
+    ```
+
+> solved: I was using `FormData()` like the MDN suggested but there was no need, just passed the file straight in. also added a `content-type` header.

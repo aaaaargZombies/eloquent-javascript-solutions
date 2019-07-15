@@ -22,9 +22,9 @@ class Read {
   }
 
   imgs() {
-    return Array.from(this.dom.querySelectorAll('img'))
-      .map(x => x.src)
-      .map(x => x.replace(baseUrl, ''));
+    return Array.from(this.dom.querySelectorAll('img'));
+    // .map(x => x.src)
+    // .map(x => x.replace(baseUrl, ''));
   }
 }
 
@@ -72,6 +72,68 @@ class SaveBtn {
   }
 }
 
+class MissingImg {
+  constructor(img) {
+    this.src = img.src.replace(baseUrl, '');
+    this.alt = img.alt;
+    this.uploadBtn = elt(
+      'button',
+      {
+        onclick: event => {
+          event.preventDefault();
+          this.addImg();
+        },
+      },
+      'upload 📁',
+    );
+    this.dom = elt(
+      'h6',
+      {},
+      `Looks like we're missing your image of '${
+        this.alt
+      }'! Would you like to choose one to `,
+      this.uploadBtn,
+    );
+  }
+  addImg() {
+    let input = elt('input', {
+      type: 'file',
+      onchange: () => this.uploadImg(input.files[0]),
+    });
+    document.body.appendChild(input);
+    input.click();
+    input.remove();
+  }
+  async uploadImg(file) {
+    console.log({file});
+    let formData = new FormData();
+    formData.append('img', file);
+    await fetch(baseUrl + this.src, {
+      headers: {'Content-Type': file.type},
+      method: 'PUT',
+      body: file,
+    });
+    // upload the file to the server
+    //
+    // replace missingImg with img;
+    this.dom.replaceWith(elt('img', {alt: this.alt, src: this.src}));
+  }
+}
+async function addMissingImgs(pageImgs) {
+  let serverImgs = await fetch(baseUrl + '?dir');
+  serverImgs = await serverImgs.text();
+  missingImgs = pageImgs.filter(
+    i =>
+      !serverImgs.split('\n').includes(i.src.replace(baseUrl, '')) &&
+      i.src.replace(baseUrl, '').slice(0, 'http'.length) !== 'http',
+  );
+  missingImgs.forEach(i => {
+    // addImg(i);
+    let message = new MissingImg(i);
+    console.log(message);
+    i.replaceWith(message.dom);
+  });
+}
 async function addMissingLinks(pageLinks) {
   let serverLinks = await fetch(baseUrl + '?dir');
   serverLinks = await serverLinks.text();
@@ -82,7 +144,6 @@ async function addMissingLinks(pageLinks) {
   );
   missingLinks.forEach(l => addLink(l));
 }
-
 function addLink(link) {
   let body = `
 <!DOCTYPE html>
@@ -100,7 +161,6 @@ function addLink(link) {
   </body>
 </html>
 	`;
-
   fetch(baseUrl + link, {
     method: 'PUT',
     body: body,
@@ -109,43 +169,9 @@ function addLink(link) {
     },
   });
 }
-async function addMissingImgs(pageImgs) {
-  let serverImgs = await fetch(baseUrl + '?dir');
-  serverImgs = await serverImgs.text();
-  missingImgs = pageImgs.filter(
-    i =>
-      !serverImgs.split('\n').includes(i) &&
-      i.slice(0, 'http'.length) !== 'http',
-  );
-  missingImgs.forEach(i => {
-    addImg(i);
-  });
-}
-// TODO
-function addImg(link) {
-  debugger;
-  let type = link.split('.')[link.split('.').length - 1];
-  console.log({type});
-  if (!imgTypes.includes(type)) return;
-  // this is a new bit for me!
-  // file:///home/unicorn/sandbox/JS/eloquent/Eloquent-JavaScript/html/19_paint.html#p_apCzJ1aUDN
-  let input = elt('input', {type: 'file', onchange: () => uploadImg(link)});
-  // input.files[0] will be useful
-  document.body.appendChild(input);
-  input.click(); // this isn't working??? works when i do it by hand though, 100% works on the paint program from EJS
-  // i think its something to do with the need for user interaction, if i make a button that calls the function when clicked will it work?
-  // YES, THIS WORKS, now how to solve this??? I guess it is triggered by a button press but just quite far down the line....
-  input.remove();
-}
-
-function uploadImg(link) {
-  console.log({link});
-}
-
 const container = document.querySelector('div');
 const baseUrl = 'http://localhost:8000/';
 const imgTypes = ['jpg', 'jpeg', 'gif', 'png', 'apng', 'svg', 'bmp', 'ico'];
-
 function starterHTML() {
   const existingWiki = document.querySelector('.read');
   if (existingWiki) return domChildrenArray(existingWiki);
@@ -153,9 +179,7 @@ function starterHTML() {
   if (containerChildren.length) return containerChildren;
   return [elt('h1', {}, 'WELCOME TO THE MD WIKI')];
 }
-
 let wiki = new Wiki(new Read(starterHTML()), new EditBtn());
-
 function updateDOM() {
   if (!container.children.length) {
     container.appendChild(wiki.dom);
@@ -163,5 +187,4 @@ function updateDOM() {
   }
   container.replaceChild(wiki.dom, container.firstChild);
 }
-
 updateDOM();
