@@ -105,8 +105,10 @@ class MissingImg {
     input.remove();
   }
   async uploadImg(file) {
-    // should i do some file type checking, does the this.src match the file chosen?
-    // upload the file to the server
+    // if the file was an external resource this doesn't work!
+    if (this.src.slice(0, 'http'.length) === 'http') {
+      this.src = this.src.split('/')[this.src.split('/').length - 1];
+    }
     await fetch(baseUrl + this.src, {
       headers: {'Content-Type': file.type},
       method: 'PUT',
@@ -116,19 +118,9 @@ class MissingImg {
     this.dom.replaceWith(elt('img', {alt: this.alt, src: this.src}));
   }
 }
-async function addMissingImgs(pageImgs) {
-  let serverImgs = await fetch(baseUrl + '?dir');
-  serverImgs = await serverImgs.text();
-  missingImgs = pageImgs.filter(
-    i =>
-      !serverImgs.split('\n').includes(i.src.replace(baseUrl, '')) &&
-      i.src.replace(baseUrl, '').slice(0, 'http'.length) !== 'http',
-  );
-  missingImgs.forEach(i => {
-    // addImg(i);
-    let message = new MissingImg(i);
-    console.log(message);
-    i.replaceWith(message.dom);
+function addMissingImgs(pageImgs) {
+  pageImgs.forEach(i => {
+    i.onerror = () => i.replaceWith(new MissingImg(i).dom);
   });
 }
 async function addMissingLinks(pageLinks) {
