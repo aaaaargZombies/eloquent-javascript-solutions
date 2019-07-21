@@ -14,7 +14,7 @@
 
 ## Markdown Wiki
 
-The obvious existing example of such a site is a wiki! I'd like to try and build one that uses markdown for editing and then use some of the ideas from chapter chapter 12 to compile the markdown to html and back again for editing.
+The obvious existing example of such a site is a wiki! I'd like to try and build one that uses markdown for editing and then use some of the ideas from chapter 12 to compile the markdown to html and back again for editing.
 
 ### Spec
 
@@ -25,7 +25,6 @@ The obvious existing example of such a site is a wiki! I'd like to try and build
 - An save button to that turns the text field back into content.
 - A method of processing the innerHtml of the div into markdown.
 - A method of processing the markdown into html.
-- Display the markdown syntax in the content so it's easier to compile to/from and so the interface is Discoverable.
 - If a link is created to a new page, create that file at compile time.
 - Starting text that explains how to get started.
 
