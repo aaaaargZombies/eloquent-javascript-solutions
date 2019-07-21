@@ -18,12 +18,15 @@ function parseNode(node) {
     (node.nodeName !== '#text' && syntax[node.nodeName]) ||
     node.nodeName === 'P'
   ) {
-    if (
-      node.nodeName !== 'EM' ||
-      node.nodeName !== 'STRONG' ||
-      node.nodeName !== 'CODE'
-    ) {
-      md.push(`\n\n`);
+    // if (
+    //   node.nodeName !== 'EM' ||
+    //   node.nodeName !== 'STRONG' ||
+    //   node.nodeName !== 'CODE'
+    // ) {
+    //   md.push(`\n\n`);
+    // }
+    if (node.nodeName === 'PRE') {
+      md.push('\n\n');
     }
     md.push(syntax[node.nodeName]);
   }
@@ -39,7 +42,7 @@ function parseNode(node) {
     } else if (n.nodeName === 'UL') {
       md.push(...parseLists(n));
     } else {
-      md.push(...parseNode(n));
+      md.push(...parseNode(n)); // this results in undefined being pushed at the start of a <p>
     }
   });
   if (
@@ -58,13 +61,14 @@ function htmlToMd(node) {
 }
 
 const syntax = {
-  H1: `# `,
-  H2: `## `,
-  H3: `### `,
-  H4: `#### `,
-  H5: `##### `,
-  H6: `###### `,
-  BLOCKQUOTE: `> `,
+  P: `\n\n`,
+  H1: `\n\n# `,
+  H2: `\n\n## `,
+  H3: `\n\n### `,
+  H4: `\n\n#### `,
+  H5: `\n\n##### `,
+  H6: `\n\n###### `,
+  BLOCKQUOTE: `\n\n> `,
   EM: `*`,
   STRONG: `**`,
   CODE: `\``,

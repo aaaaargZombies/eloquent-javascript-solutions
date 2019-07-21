@@ -9,6 +9,8 @@
 
 > solved by adding a query string to the url.
 
-- An image is a link but how should it handle the `PUT`?
-- I'd like to just open the select file dialogue for each missing link but the browser prevents this with out user interaction.
-- perhaps replace the image with a component that uploads the image then replaces itself with the image????
+- **solved** An image is a link but how should it handle the `PUT`?
+- **solved** I'd like to just open the select file dialogue for each missing link but the browser prevents this with out user interaction.
+- **solved** perhaps replace the image with a component that uploads the image then replaces itself with the image????
+
+- html to md is adding lots of newlines to which when returned to html changes the document!
