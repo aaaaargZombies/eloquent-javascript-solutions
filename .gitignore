@@ -2,4 +2,4 @@
 **/node_modules
 **/package-lock.json
 18_node/publicSpace/public/*
-
+**/talks.json
