@@ -295,3 +295,8 @@ function addImg(link) {
 - the `addImg()` function is called as a result of clicking the save button. But it is called in the `forEach` loop, which is 4 calls deep from the button click.
 - Is it a question of how deep the call stack is, Could i try and move most of the logic into the `change()` function?
 - Or is there some other issue I'm missing?
+
+### Problem
+
+- I don't really understand the `class y extends x` and the `super` keyword. In the react tutorial it seems to cause some issues with `this`.
+- If I don't use super, don't use a constructor and use arrow functions I don't seem to nee to bind this. Why?

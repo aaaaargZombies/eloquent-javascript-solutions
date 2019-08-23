@@ -1,4 +1,4 @@
-const SCRIPTS = require(`../Eloquent-JavaScript/code/scripts.js`);
+const SCRIPTS = require(`../../Eloquent-JavaScript/code/scripts.js`);
 const testText = '英国的狗说 "woof", 俄罗斯的狗说 "тяв"'
 
 // stolen code
