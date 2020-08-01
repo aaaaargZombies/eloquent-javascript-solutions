@@ -187,7 +187,7 @@ six
 
 ### Problem
 
-- At what point is the state set rather than just redrawing from the origional state at the time of click? how is it implemented here?
+- At what point is the state set rather than just redrawing from the original state at the time of click? how is it implemented here?
 
 > An important detail in this implementation is that when dragging, the rectangle is redrawn on the picture from the original state. That way, you can make the rectangle larger and smaller again while creating it, without the intermediate rectangles sticking around in the final picture. This is one of the reasons why immutable picture objects are useful—we’ll see another reason later.
 
@@ -299,4 +299,4 @@ function addImg(link) {
 ### Problem
 
 - I don't really understand the `class y extends x` and the `super` keyword. In the react tutorial it seems to cause some issues with `this`.
-- If I don't use super, don't use a constructor and use arrow functions I don't seem to nee to bind this. Why?
+- If I don't use super, don't use a constructor and use arrow functions I don't seem to need to bind this. Why?
