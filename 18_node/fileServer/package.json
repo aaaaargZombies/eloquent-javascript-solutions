@@ -5,7 +5,7 @@
   "main": "main.js",
   "dependencies": {
     "mime": "^2.2.0",
-    "node-fetch": "^2.5.0"
+    "node-fetch": "^2.6.1"
   },
   "devDependencies": {},
   "scripts": {
